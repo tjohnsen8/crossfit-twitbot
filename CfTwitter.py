@@ -21,6 +21,9 @@ class CfTwitter:
 		except:
 			print('error handling hashtags file')
 
+	def get_statuses_from_users(self):
+		self.crossfit_tweets = []
+
 	def do_retweets(self):
 		self.get_hashtags_for_rt()
 		for hashtag in self.hashtags:
@@ -51,6 +54,7 @@ class CfTwitter:
 		for status in status_list:
 			try:
 				self.api.update_status(status)
+				print(status)
 			except tweepy.TweepError as e:
 				print(e.reason)
 			except StopIteration:

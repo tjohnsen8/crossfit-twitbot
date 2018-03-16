@@ -1,4 +1,7 @@
 #crossfit
+#crossfitopen
 #crossfitgames
 #intheopen
-#18point3
+#18point4
+#deadlift
+hspu

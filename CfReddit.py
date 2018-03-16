@@ -31,11 +31,11 @@ class CfReddit:
 
 	def get_reddit_updates(self):
 		updates = []
-		for submission in self.reddit.subreddit('crossfit').new(limit=5):
+		for submission in self.reddit.subreddit('crossfit').new(limit=10):
 			title = submission.title
 			url = 'www.reddit.com{}'.format(submission.permalink)
 			if not submission in self.already_tweeted:
-				tweet_str = '/r/crossfit update {} {}'.format(title, url)
+				tweet_str = '{} #crossfit #reddit #fitness {}'.format(title, url)
 				updates.append(tweet_str)
 				self.already_tweeted.append(submission)
 				self.add_already_tweeted_to_file(submission)
