@@ -30,20 +30,20 @@ class CfTwitter:
 			self.do_retweet(hashtag)
 
 	def do_retweet(self, query_str):
-		for tweet in tweepy.Cursor(self.api.search,q=query_str).items(10):
-		# Print out usernames of the last 10 people to use #ocean
+		for tweet in tweepy.Cursor(self.api.search,q=query_str).items(20):
 			try:
-				if tweet.user.screen_name == 'crossfit' or tweet.user.screen_name == 'crossfitgames':
+				if tweet.user.screen_name.lower() == 'crossfit' or tweet.user.screen_name.lower() == 'crossfitgames':
 					tweet.favorite()
-					url = 'https://twitter.com/{}/status/{}'.format(tweet.user.screen_name, tweet.id)
-					tweet_str = 'CrossFit Update {}'.format(url)
-					self.api.update_status(tweet_str)
+					tweet.retweet()
+				elif tweet.user.screen_name.lower() == 'sergbbk4' or tweet.user.screen_name.lower() == 'crossfittrump':
+					pass
 				else:
 					tweet.retweet()
 				
 				print('Tweet by: @' + tweet.user.screen_name)
 				print(tweet.text)
 				print('\n\n')
+				time.sleep(2)
 			except tweepy.TweepError as e:
 				print(e.reason)
 			except StopIteration:
@@ -55,6 +55,7 @@ class CfTwitter:
 			try:
 				self.api.update_status(status)
 				print(status)
+				time.sleep(1)
 			except tweepy.TweepError as e:
 				print(e.reason)
 			except StopIteration:

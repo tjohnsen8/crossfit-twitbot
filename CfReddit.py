@@ -11,6 +11,17 @@ class CfReddit:
 		self.get_already_tweeted()
 
 
+	def get_subs_for_tweets(self):
+		self.subs = []
+		try:
+			with open('subreddits.txt') as file:
+				lines = file.readlines()
+				for line in lines:
+					self.subs.append(line.rstrip('\n'))
+		except:
+			print('error handling subs file')
+
+
 	def get_already_tweeted(self):
 		try:
 			with open('twrd.txt', 'r') as file:
@@ -31,14 +42,16 @@ class CfReddit:
 
 	def get_reddit_updates(self):
 		updates = []
-		for submission in self.reddit.subreddit('crossfit').new(limit=10):
-			title = submission.title
-			url = 'www.reddit.com{}'.format(submission.permalink)
-			if not submission in self.already_tweeted:
-				tweet_str = '{} #crossfit #reddit #fitness {}'.format(title, url)
-				updates.append(tweet_str)
-				self.already_tweeted.append(submission)
-				self.add_already_tweeted_to_file(submission)
-			else:
-				print('already tweeted {}'.format(submission))
+		self.get_subs_for_tweets()
+		for sub in self.subs:
+			for submission in self.reddit.subreddit(sub).new(limit=10):
+				title = submission.title
+				url = 'www.reddit.com{}'.format(submission.permalink)
+				if not submission in self.already_tweeted:
+					tweet_str = 'Reddit {} update {} #{} #fitness {}'.format(sub, title, sub, url)
+					updates.append(tweet_str)
+					self.already_tweeted.append(submission)
+					self.add_already_tweeted_to_file(submission)
+				else:
+					print('already tweeted {}'.format(submission))
 		return updates
