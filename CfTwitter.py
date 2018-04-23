@@ -1,5 +1,6 @@
 import tweepy
 import time
+from os import remove
 from credentials import *
 
 
@@ -10,6 +11,24 @@ class CfTwitter:
 		self.auth.set_access_token(twitter_access_token, twitter_access_token_secret)
 		self.api = tweepy.API(self.auth)
 		self.get_hashtags_for_rt()
+
+	def trim_to_280(self, status):
+		if len(status) > 200:
+			status = status[:200]
+		return status
+
+	def trim_to_280_keep_hashtags(self, status):
+		if len(status) > 280:
+			# remove the hashtags from the status
+			hashtags = [word[word.find('#'):] for word in status.split(' ') if '#' in word]
+			status = status[:status.find('#')]
+			hashtag_str = ' '.join(hashtags)
+			hashtag_str_len = 140 # leave half the status for the message
+			while len(hashtag_str) > hashtag_str_len:
+				del hashtags[-1]
+				hashtag_str = ' '.join(hashtags)
+			status = '{}... {}'.format(status[:len(hashtag_str) - 4], hashtag_str)
+		return status
 
 	def get_hashtags_for_rt(self):
 		self.hashtags = []
@@ -49,10 +68,10 @@ class CfTwitter:
 			except StopIteration:
 				break
 
-
 	def do_tweets(self, status_list):
 		for status in status_list:
 			try:
+				status = self.trim_to_280(status)
 				self.api.update_status(status)
 				print(status)
 				time.sleep(1)
@@ -60,4 +79,17 @@ class CfTwitter:
 				print(e.reason)
 			except StopIteration:
 				break
+
+	def do_media_tweets(self, media_tuples):
+		for (filename, message) in media_tuples:
+			try:
+				message = self.trim_to_280_keep_hashtags(message)
+				self.api.update_with_media(filename, status=message)
+				print(message)
+				remove(filename)
+			except tweepy.TweepError as e:
+				print(e.reason)
+			except StopIteration:
+				break
+
 
