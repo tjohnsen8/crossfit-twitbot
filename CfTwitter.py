@@ -43,13 +43,13 @@ class CfTwitter:
 	def get_statuses_from_users(self):
 		self.crossfit_tweets = []
 
-	def do_retweets(self):
+	def do_retweets(self, num_retweets=20):
 		self.get_hashtags_for_rt()
 		for hashtag in self.hashtags:
-			self.do_retweet(hashtag)
+			self.do_retweet(hashtag, num_retweets)
 
-	def do_retweet(self, query_str):
-		for tweet in tweepy.Cursor(self.api.search,q=query_str).items(20):
+	def do_retweet(self, query_str, num_retweets):
+		for tweet in tweepy.Cursor(self.api.search,q=query_str).items(num_retweets):
 			try:
 				if tweet.user.screen_name.lower() == 'crossfit' or tweet.user.screen_name.lower() == 'crossfitgames':
 					tweet.favorite()

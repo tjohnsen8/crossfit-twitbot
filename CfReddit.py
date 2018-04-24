@@ -40,15 +40,15 @@ class CfReddit:
 			print('error in file handling')
 
 
-	def get_reddit_updates(self):
+	def get_reddit_updates(self, num_posts=10):
 		updates = []
 		self.get_subs_for_tweets()
 		for sub in self.subs:
-			for submission in self.reddit.subreddit(sub).new(limit=10):
+			for submission in self.reddit.subreddit(sub).new(limit=num_posts):
 				title = submission.title
 				url = 'www.reddit.com{}'.format(submission.permalink)
 				if not submission in self.already_tweeted:
-					tweet_str = 'Reddit {} update {} #{} #fitness {}'.format(sub, title, sub, url)
+					tweet_str = 'Reddit r/{} update:\n\n{} #{} {}'.format(sub, title, sub, url)
 					updates.append(tweet_str)
 					self.already_tweeted.append(submission)
 					self.add_already_tweeted_to_file(submission)

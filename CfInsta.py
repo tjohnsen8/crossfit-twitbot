@@ -162,10 +162,10 @@ class CfInstagram:
 
 
 if __name__ == '__main__':
-	caption_test()
-	#ig = CfInstagram();
-	# images = ig.get_images_from_hashtag('healthystepsnutrition', 5)
-	#updates = ig.get_ig_updates()
+	#caption_test()
+	ig = CfInstagram();
+	#images = ig.get_images_from_hashtag('healthystepsnutrition', 5)
+	updates = ig.get_ig_updates()
 	#print(updates)
 
 	#captions = ig.get_captions_test('healthystepsnutrition')

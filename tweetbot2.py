@@ -9,7 +9,7 @@ if __name__ == '__main__':
 	rd = cfr.CfReddit()
 	ig = cfi.CfInstagram()
 	while True:
-		tw.do_retweets()
+		tw.do_retweets(5)
 		statuses = rd.get_reddit_updates()
 		tw.do_tweets(statuses)
 		ig_media = ig.get_ig_updates()
