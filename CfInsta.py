@@ -5,6 +5,7 @@ import requests
 import json
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
+from dataclasses import dataclass
 
 
 def get_largest_image(candidates):
@@ -64,6 +65,15 @@ def caption_test():
 	print(status)
 
 
+@dataclass
+class IgMedia:
+	photo: str
+	username: str
+	caption: str
+	full_name: str
+	media_type: int
+
+
 class CfInstagram:
 	def __init__(self):
 		self.already_tweeted = []
@@ -105,20 +115,31 @@ class CfInstagram:
 
 	def get_images_from_hashtag(self, hashtag, num_images, view_debug=False):
 		images = []
+		'''
+		list of 
+		class IgMedia:
+			photo: str
+			username: str
+			caption: str
+			full_name: str
+			media_type: int
+		'''
 		get_hashtag = self.api.getHashtagFeed(hashtag)
 
 		if get_hashtag == False:
 			return images
 
 		for item in self.api.LastJson['items']:
-			if 'image_versions2' in item.keys():
+			if item['media_type'] == 1 and 'image_versions2' in item.keys():
 				candidate = get_largest_image(item['image_versions2']['candidates'])
 				# get image 
 				filename = self.save_image_from_candidate(candidate['url'])
 				if filename != '':
 					# get status, save as tuple
 					caption = get_caption(item)
-					images.append((filename, caption))
+					#images.append((filename, caption))
+					images.append(IgMedia(filename, item['user']['username'], caption, \
+						item['user']['full_name'], item['media_type']))
 				if len(images) > num_images:
 					break
 				if view_debug:
@@ -144,9 +165,23 @@ class CfInstagram:
 
 		updates = []
 		for hashtag in self.hashtags:
-			images = self.get_images_from_hashtag(hashtag, 3, view_debug)
+			images = self.get_images_from_hashtag(hashtag, 2, view_debug)
 			updates.extend(images)
 		return updates
+
+
+	def repost(self):
+		updates = self.get_ig_updates()
+		for post in updates:
+			self_caption = f"Repost: via {post.full_name} @{post.username} "
+			self_caption += "\n\n\n"
+			self_caption += post.caption
+			self.upload_photo(post.photo, self_caption)
+			remove(post.photo)
+
+
+	def upload_photo(self, photo_path, caption):
+		self.api.uploadPhoto(photo_path, caption)
 
 
 	def get_captions_test(self, hashtag):
@@ -166,7 +201,7 @@ if __name__ == '__main__':
 	ig = CfInstagram();
 	#images = ig.get_images_from_hashtag('healthystepsnutrition', 5)
 	updates = ig.get_ig_updates()
-	#print(updates)
+	print(updates)
 
 	#captions = ig.get_captions_test('healthystepsnutrition')
 	#for caption in captions:
