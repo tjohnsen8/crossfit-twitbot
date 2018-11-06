@@ -1,7 +1,6 @@
 import praw
 from credentials import *
 
-
 class CfReddit:
 	def __init__(self):
 		self.reddit = praw.Reddit(client_id=reddit_client_id,
@@ -55,3 +54,9 @@ class CfReddit:
 				else:
 					print('already tweeted {}'.format(submission))
 		return updates
+
+	def get_new_reddit_posts(self, sub_name, max_posts=30):
+		posts = []
+		for submission in self.reddit.subreddit(sub_name).new(limit=max_posts):
+			posts.append(submission)
+		return posts
